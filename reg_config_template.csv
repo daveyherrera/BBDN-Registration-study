@@ -1,0 +1,2 @@
+Event,HostName,CreateInstructor,InstructorRole,CreateStudent,StudentRole,StudentConvention,CourseIds,IsTemplate,IsEloqua,EmailFrom,Datasource,EmailSubject,EventName,EloquaCDOParentId,IsHubilo,HubiloId
+test,learn_hostname,True,Faculty,True,Student,student_,_157_1,False,True,user@example.com,externalId:REGISTRATION,Registration Email,My Event,123,False,
