@@ -6,20 +6,40 @@ with open("README.md") as fp:
 
 
 setuptools.setup(
-    name="bbdn_registration",
+    name="registration_service",
     version="0.0.1",
 
-    description="An empty CDK Python app",
+    description="A registration service integrated with Blackboard Learn for creating users, courses, and enrollments",
     long_description=long_description,
     long_description_content_type="text/markdown",
 
-    author="author",
+    author="Scott Hurrey",
 
-    package_dir={"": "bbdn_registration"},
-    packages=setuptools.find_packages(where="bbdn_registration"),
+    package_dir={"": "registration_service"},
+    packages=setuptools.find_packages(where="registration_service"),
 
     install_requires=[
-        "aws-cdk.core==1.95.1",
+        "aws-cdk.core==1.101.0",
+        "aws-cdk.aws-lambda",
+        "aws-cdk.aws_apigateway",
+        "aws-cdk.aws-apigatewayv2",
+        "aws-cdk.aws-apigatewayv2-integrations",
+        "aws-cdk.aws-dynamodb",
+        "aws-cdk.aws-s3",
+        "aws-cdk.aws-s3-deployment",
+        "aws-cdk.aws-s3-assets",
+        "aws-cdk.aws-route53",
+        "aws-cdk.aws-route53-targets",
+        "aws-cdk.aws-certificatemanager",
+        "aws-cdk.custom-resources",
+        "aws-cdk.aws-iam",
+        "aws-cdk.aws-sqs",
+        "aws-cdk.aws-lambda-event-sources",
+        "aws-cdk.aws-ec2",
+        "aws-cdk.aws-elasticache",
+        "aws-cdk.aws-events",
+        "aws-cdk.aws-events-targets",
+        "aws-cdk.aws-lambda-python"
     ],
 
     python_requires=">=3.6",
