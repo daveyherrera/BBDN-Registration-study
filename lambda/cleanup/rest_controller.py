@@ -169,7 +169,7 @@ class rest_controller():
                 self.logger.debug("deleteExpiredUsers [status: " + str(r.status) + " res: " + str(res) + "]")
                 
                 for user in res['results']:
-                    if user['dataSourceId'] == datasourceId:
+                    if user['dataSourceId'] == datasourceId and user['availability']['available'] == 'Yes':
                         delete_endpoint = 'https://' + self.target_url + '/learn/api/public/v1/users/' + user['id']
                         user_json = {
                             "availability": {

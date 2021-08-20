@@ -311,7 +311,10 @@ class EmailBlock:
                                                             <tr>
                                                                <td class="text-header">
                                                                   All you need to start using your 30-day Blackboard Trial inside.
-
+<div style="display: none; max-height: 0px; overflow: hidden;">
+&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;
+&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;
+</div>
                                                                   <div class="mobile-br-10" style="font-size:0pt; line-height:0pt;">
                                                                   </div>
                                                                </td>
@@ -327,7 +330,7 @@ class EmailBlock:
                                                       <tbody>
                                                          <tr>
                                                             <td class="text-header-r">
-                                                               <a class="link-u" data-targettype="sysaction" href="https://app.email.blackboard.com/e/es?s=~~eloqua..type--emailfield..syntax--siteid..encodeFor--url~~&e=~~eloqua..type--emailfield..syntax--elqemailsaveguid..encodeFor--url~~&elqTrackId=1352B60E4DDF18321C0347862681ADB0" style="color:#000001; text-decoration:underline" target="_blank">View Online</a>
+                                                               <!--a class="link-u" data-targettype="sysaction" href="https://app.email.blackboard.com/e/es?s=~~eloqua..type--emailfield..syntax--siteid..encodeFor--url~~&e=~~eloqua..type--emailfield..syntax--elqemailsaveguid..encodeFor--url~~&elqTrackId=1352B60E4DDF18321C0347862681ADB0" style="color:#000001; text-decoration:underline" target="_blank">View Online</a-->
                                                             </td>
                                                          </tr>
                                                       </tbody>
@@ -407,7 +410,7 @@ class EmailBlock:
 														</div>
 														<div class="text" style="color:#0a0a0a; font-family: 'Source Sans Pro', sans-serif; font-size:16px; line-height:27px; text-align:left; margin-bottom:1rem">
 															 <!--Follow this instructions:--><ul>
-                                                          <li>Login through this URL: <a href="https://trial.blackboard.com/?elqTrackId=f12ed86c080c44678505b4d8380d7162">trial.blackboard.com</a></li>
+                                                          <li>Login through this URL: <a href="https://trial.blackboard.com/?elqTrackId=f12ed86c080c44678505b4d8380d7162&elqTrack=true">trial.blackboard.com</a></li>
                                                           <li>Enter your instructor username: {instructor}</li>
                                                           <li>Enter your student username: {student}</li>
                                                           <li>Enter your password: {password}</li>
@@ -508,7 +511,7 @@ class EmailBlock:
                          <tr>
                             <td>
                                <div class="text" style="color:0a0a0a; font-family: 'Source Sans Pro', sans-serif; font-size:16px; line-height:27px; text-align:left">								30 days will go by fast so, to be sure to make the most of your trial, we’ll provide tips, hacks and insights along the way.<br><br>
-                                 <a href="https://www.blackboard.com/teaching-learning/learning-management/blackboard-learn?elqTrackId=724977b9342f4e9bb265105e0faa196e" data-targettype="webpage" title="Help Portal"><strong>Want more information about Blackboard Learn?</strong></a>
+                                 <a href="https://www.blackboard.com/teaching-learning/learning-management/blackboard-learn?elqTrackId=724977b9342f4e9bb265105e0faa196e&elqTrack=true" data-targettype="webpage" title="Help Portal"><strong>Want more information about Blackboard Learn?</strong></a>
 
                                  <br><br><b>Looking for help?
 

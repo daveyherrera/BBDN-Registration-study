@@ -81,7 +81,7 @@ class eloqua_controller():
         self.logger.debug("[auth:setToken()] STATUS CODE: " + str(r.status) )
         #strip quotes from result for better dumps
 
-        if r.status != 200:
+        if r.status != 200 and r.status != 201:
             self.logger.error("[auth:setToken()] ERROR " + str(r.status) + " " + str(r.data))
 
         return r.status

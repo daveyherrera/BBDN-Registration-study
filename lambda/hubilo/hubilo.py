@@ -77,6 +77,8 @@ def executeRegistration(data, config):
     params += f"&organisation={data['company']}"
     params += f"&designation={data['job_title']}"
     params += f"&country={data['country']}"
+    if 'industry' in data:
+        params += f"&industry={data['industry']}"
     params += f"&eventid={config['hubilo_event_id']}"
     
     
@@ -88,12 +90,12 @@ def executeRegistration(data, config):
     
     headers = {
         "Authorization" : token,
-        "Content-Type": "application/x-www-form-urlencoded"
+        "Content-Type": "application/x-www-form-urlencoded; charset=utf-8"
     }
     
     logger.debug(f"headers: " + pformat(headers))
 
-    r = http.request_encode_body("POST", HUBILO_ENDPOINT, body=params, headers=headers)
+    r = http.request_encode_body("POST", HUBILO_ENDPOINT, body=params.encode('UTF-8'), headers=headers)
     
     res = json.loads(r.data)
     logger.debug(f"Hubilo Enrollment [status: {r.status}, res: " + pformat(res) + "]")
@@ -125,7 +127,7 @@ def lambda_handler(event, context):
             if executeRegistration(data, config):
                 logger.debug(f"Registration successful")
                 status = eloqua_controller.createCustomDataObject(config['eloqua_parent_id'],data['email'])
-                if status != 200 and status !=201:
+                if status != 200 and status != 201:
                     logger.error("Error creating custom data object")
             else:
                 logger.error(f"Error registering user {data['email']}")

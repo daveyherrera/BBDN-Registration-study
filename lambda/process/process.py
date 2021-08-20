@@ -10,7 +10,7 @@ import boto3
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key
 
-from learn_rest import auth_provider, rest_controller
+import auth_provider, rest_controller
 
 sqs = boto3.client('sqs')
 QUEUE_URL = os.environ['QUEUE_URL']
