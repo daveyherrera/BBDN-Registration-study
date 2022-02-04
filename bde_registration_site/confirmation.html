@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<link href="styles.css" rel="stylesheet">
+
+<body>
+
+<div class="logo-header">
+  <img src="Blackboard_Data_Explorers_Logo_200x200-3.png" />
+</div>
+
+    <div style="width:80%; margin: 0 auto;">
+        <h1>Congratulations! You have successfully registered for the Blackboard Data Explorers program!</h1>
+        <p>
+            Here is your registration information. You <stong>WILL NOT</stong> receive this information in an
+            email,  so <strong>YOU MUST</strong> copy or write down this information.
+        </p>
+        <div id="credentials">
+
+        </div>
+
+        <div>
+            <button onClick="window.print()" style="width:auto;float:right;">Print this page</button>
+        </div>
+    </div>
+    <script>
+        console.log('query params' + document.location.search);
+        var params = new URLSearchParams(document.location.search);
+        var username = params.get("username");
+        var learn_password = params.get("learn_password");
+        var sf_user = params.get("sf_user");
+        var sf_pass = params.get("sf_pass");
+        console.log(username); //show C
+        console.log(learn_password); //show 1
+
+        if(learn_password === 'UserExists') {
+            learn_password = 'User already exists. Please use the Learn forgotten password form to update your password';
+        }
+        
+        document.getElementById("credentials").innerHTML = '<ul>'
+        document.getElementById("credentials").innerHTML += '<li>Learn URL: <a href="https://data-explorers.blackboard.com" target="_blank">https://data-explorers.blackboard.com</a></li>' 
+        document.getElementById("credentials").innerHTML += "<li>Learn Username: " + username + "</li>"
+        document.getElementById("credentials").innerHTML += "<li>Learn Password: " + learn_password + "</li>"
+        document.getElementById("credentials").innerHTML += '<li>Snowflake URL: <a href="https://ul00627.snowflakecomputing.com" target="_blank">https://ul00627.snowflakecomputing.com</a></li>' 
+        document.getElementById("credentials").innerHTML += "<li>Snowflake Username: " + sf_user + "</li>"
+        document.getElementById("credentials").innerHTML += "<li>Snowflake Password: " + sf_pass + "</li>"
+        document.getElementById("credentials").innerHTML += "</ul>"
+
+    </script>
+</body>
+</html>

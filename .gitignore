@@ -204,3 +204,4 @@ Config.py
 cdk.out
 cdk.context.json
 .venv-mac
+.venv-win

@@ -152,33 +152,28 @@ class BbdnRegistrationStack(cdk.Stack):
             )
         )
 
-        bucket_id = "RegistrationWebsite"
-        bucket_name = "registration." + cfg['DOMAIN_NAME']
+        bucket_id = "BBDNRegWebsite"
+        bucket_name = "BBDNRegWebsite"
         
         tempBucket = self.checkIfS3BucketExists(bucket_id, bucket_name)
         
         if tempBucket is None:
-            registration_website = s3.Bucket(self, bucket_id,
+            registration_bucket = s3.Bucket(self, bucket_id,
                 bucket_name=bucket_name,
-                public_read_access=True,
+                public_read_access=False,
                 website_index_document="index.html"
             )
         else:
-            registration_website = tempBucket
+            registration_bucket = tempBucket
 
-        reg_asset_grant = registration_website.grant_public_access()
-        config_lambda_grant = registration_website.grant_read_write(configuration_lambda)
+        config_lambda_grant = registration_bucket.grant_read_write(configuration_lambda)
 
         registration_website_files = s3deploy.BucketDeployment(
             self, 'DeployWebsite', 
             sources=[ s3deploy.Source.asset('./registration_site')], 
-            destination_bucket=registration_website
+            destination_bucket=registration_bucket
         )
 
-        route53.ARecord(self, "RegPageRecord",
-            zone=hosted_zone,
-            record_name="registration", # www
-            target=route53.RecordTarget.from_alias(alias.BucketWebsiteTarget(registration_website))
-        )
+        
 
         

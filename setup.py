@@ -39,7 +39,9 @@ setuptools.setup(
         "aws-cdk.aws-elasticache",
         "aws-cdk.aws-events",
         "aws-cdk.aws-events-targets",
-        "aws-cdk.aws-lambda-python"
+        "aws-cdk.aws-lambda-python",
+        "aws-cdk.aws_cloudfront",
+        "aws-cdk.aws_cloudfront_origins"
     ],
 
     python_requires=">=3.6",

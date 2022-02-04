@@ -20,11 +20,14 @@ from aws_cdk import (
     aws_elasticache as cache,
     aws_events as events,
     aws_events_targets as event_targets,
-    aws_lambda_python as lambpy
+    aws_lambda_python as lambpy,
+    aws_cloudfront as cloudfront,
+    aws_cloudfront_origins as origins
 )
 
 from Config import config
 from Config import smtp
+from Config import sfconfig
 
 import os
 import csv
@@ -69,7 +72,7 @@ class RegistrationServiceStack(cdk.Stack):
         log_level = config['LOG_LEVEL']
 
         dead_letter_queue = sqs.DeadLetterQueue (
-            max_receive_count=5,
+            max_receive_count=25,
             queue=sqs.Queue(
                     self, "DeadLetterQueue"
                 )
@@ -89,6 +92,12 @@ class RegistrationServiceStack(cdk.Stack):
 
         email_queue = sqs.Queue (
             self, "EmailQueue",
+            visibility_timeout=cdk.Duration.minutes(15),
+            dead_letter_queue=dead_letter_queue
+        )
+        
+        snowflake_queue = sqs.Queue (
+            self, "SnowflakeQueue",
             visibility_timeout=cdk.Duration.minutes(15),
             dead_letter_queue=dead_letter_queue
         )
@@ -130,6 +139,14 @@ class RegistrationServiceStack(cdk.Stack):
             description='Common Learn Rest Library',
             layer_version_name='LearnRestLayer'
         )
+
+        snowflake_lambda_layer = lambpy.PythonLayerVersion (
+            self, 'SnowflakeLambdaLayer',
+            entry='snowflake-connector-python',
+            compatible_runtimes=[_lambda.Runtime.PYTHON_3_8],
+            description='Snowflake connector lambda layer',
+            layer_version_name='SnowflakeLambdaLayer'
+        )
                
         # Define Lambda function
         registration_lambda = _lambda.Function(
@@ -145,6 +162,41 @@ class RegistrationServiceStack(cdk.Stack):
             },
         )
 
+        #display registration form
+        bde_registration_lambda = _lambda.Function(
+            self, "BDERegistrationHandler",
+            runtime=_lambda.Runtime.PYTHON_3_8,
+            code=_lambda.Code.asset('lambda/bde'),
+            handler='bde.lambda_handler',
+            environment = {
+                'TABLE_NAME': config_table.table_name,
+                'LOG_LEVEL' : log_level 
+            },
+        )
+
+        api_lambda = _lambda.Function(
+            self, "APIHandler",
+            runtime=_lambda.Runtime.PYTHON_3_8,
+            code=_lambda.Code.asset('lambda/api'),
+            handler='api.lambda_handler',
+            timeout=cdk.Duration.minutes(15),
+            layers=[
+                snowflake_lambda_layer
+            ],
+            environment = {
+                'REST_KEY' : config['REST_KEY'],
+                'REST_SECRET' : config['REST_SECRET'],
+                'TABLE_NAME': config_table.table_name,
+                'LOG_LEVEL' : log_level,
+                'SNOWFLAKE_USER': sfconfig['user'],
+                'SNOWFLAKE_PASS': sfconfig['password'],
+                'SNOWFLAKE_ACCOUNT': sfconfig['account'],
+                'SNOWFLAKE_WH': sfconfig['warehouse'],
+                'SNOWFLAKE_DB': sfconfig['database'],
+                'SNOWFLAKE_SCHEMA': sfconfig['schema']
+            },
+        )
+
         process_lambda = lambpy.PythonFunction(
             self, "ProcessHandler",
             entry="lambda/process",
@@ -155,6 +207,7 @@ class RegistrationServiceStack(cdk.Stack):
             environment = {
                 'QUEUE_URL': registration_queue.queue_url,
                 'EMAIL_QUEUE_URL': email_queue.queue_url,
+                'SNOWFLAKE_QUEUE_URL': snowflake_queue.queue_url,
                 'REST_KEY' : config['REST_KEY'],
                 'REST_SECRET' : config['REST_SECRET'],
                 'TABLE_NAME': config_table.table_name,
@@ -232,17 +285,20 @@ class RegistrationServiceStack(cdk.Stack):
             }
         )
 
+        
         # Give lambdas the ability to read and write to the database table
         config_table.grant_read_data(authorization_lambda)
         config_table.grant_read_data(registration_lambda)
         config_table.grant_read_data(process_lambda)
+        config_table.grant_read_data(api_lambda)
         config_table.grant_read_data(email_lambda)
         config_table.grant_read_data(hubilo_lambda)
         config_table.grant_read_data(trial_cleanup_lambda)
-
+        
         registration_queue.grant_send_messages(registration_lambda)
         hubilo_queue.grant_send_messages(registration_lambda)
         email_queue.grant_send_messages(process_lambda)
+        snowflake_queue.grant_send_messages(process_lambda)
 
         #setup free trial cleanup
         trial_cleanup_schedule = events.Schedule.rate(cdk.Duration.days(1))
@@ -284,9 +340,24 @@ class RegistrationServiceStack(cdk.Stack):
             )
         ) 
 
+        bde_certificate = acm.Certificate(self, "BDECertificate",
+            domain_name="bde." + config['DOMAIN_NAME'],
+            validation=acm.CertificateValidation.from_dns(hosted_zone)
+        )
+
+        bde_domain = _apigw2.DomainName (
+            self,'BDEDomain',
+            certificate=bde_certificate,
+            domain_name="bde." + config['DOMAIN_NAME']
+        )
+
         # Set up proxy integrations
         registration_lambda_integration = _a2int.LambdaProxyIntegration(
             handler=registration_lambda,
+        )
+
+        api_lambda_integration = _a2int.LambdaProxyIntegration(
+            handler=api_lambda,
         )
 
         # Define API Gateway and HTTP API
@@ -340,3 +411,43 @@ class RegistrationServiceStack(cdk.Stack):
         routeCfn = registration_entity.node.default_child
         routeCfn.authorizer_id = registration_authorizer.ref
         routeCfn.authorization_type = "CUSTOM"
+
+        api_entity = _apigw2.HttpRoute(
+            self, "APIRegistrationRoute",
+            http_api=registration_api,
+            route_key=_apigw2.HttpRouteKey.with_('/api', _apigw2.HttpMethod.POST),
+            integration=api_lambda_integration
+        )
+
+        bde_bucket = s3.Bucket(self, "bde-registration",
+            bucket_name="bde-registration"
+        )
+
+        bde_website_files = s3deploy.BucketDeployment(
+            self, 'DeployWebsite', 
+            sources=[ s3deploy.Source.asset('./bde_registration_site')], 
+            destination_bucket=bde_bucket
+        )
+
+        bde_cf_distribution = cloudfront.Distribution(self, "BDEDistro",
+            default_behavior=cloudfront.BehaviorOptions(
+                origin=origins.S3Origin(bde_bucket),
+                allowed_methods=cloudfront.AllowedMethods.ALLOW_GET_HEAD,
+                viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
+            ),
+            domain_names=["bde.bbdevcon.com"],
+            default_root_object="index.html",
+            certificate=bde_certificate,
+            enable_logging=True
+        )
+
+        bde_api_arecord = route53.ARecord(
+            self, "BDEAliasRecord",
+            zone=hosted_zone,
+            record_name="bde",
+            target=route53.RecordTarget.from_alias(
+                alias.CloudFrontTarget(bde_cf_distribution)
+            )
+        ) 
+
+

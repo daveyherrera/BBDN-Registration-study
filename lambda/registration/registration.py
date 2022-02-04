@@ -68,6 +68,7 @@ def lambda_handler(event, context):
         job_title = msg_map.get('title','err')
         phone = msg_map.get('busPhone','err')
         country = msg_map.get('country','err')
+        industry = msg_map.get('industry','err')
         event_id = msg_map.get('hiddenField','err')
         
         if not is_valid_event(event_id):
@@ -89,6 +90,7 @@ def lambda_handler(event, context):
             'company': company,
             'job_title': job_title,
             'country': country,
+            'industry': industry,
             'event_id' : event_id
         }
         

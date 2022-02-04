@@ -63,12 +63,22 @@ class eloqua_controller():
         local_headers = { 'Content-Type' : 'application/json', 'Accept' : 'application/json' }
         local_headers.update(self.headers)
         self.logger.debug(f"createCustomDataObject: local_headers: {local_headers}")
-        
+        """
         body={
             "type": "CustomObjectData",
             "fieldValues": [
                 {
                 "id": "4384",
+                "value": email
+                }
+            ]
+        }
+        """
+        body={
+            "type": "CustomObjectData",
+            "fieldValues": [
+                {
+                "id": "4563",
                 "value": email
                 }
             ]

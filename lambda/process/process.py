@@ -15,6 +15,7 @@ import auth_provider, rest_controller
 sqs = boto3.client('sqs')
 QUEUE_URL = os.environ['QUEUE_URL']
 EMAIL_QUEUE_URL = os.environ['EMAIL_QUEUE_URL']
+SNOWFLAKE_QUEUE_URL = os.environ['SNOWFLAKE_QUEUE_URL']
 
 TOKEN_LIST = {}
 
@@ -251,7 +252,7 @@ def lambda_handler(event, context):
             logger.debug(str(login_info))
 
             sqs.send_message(
-                QueueUrl=EMAIL_QUEUE_URL,
+                QueueUrl=EMAIL_QUEUE_URL if event_id != "data-explorers" else SNOWFLAKE_QUEUE_URL,
                 MessageBody=(
                     json.dumps(login_info)
                 )
