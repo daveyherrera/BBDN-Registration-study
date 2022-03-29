@@ -6,6 +6,7 @@ import os
 import string
 import secrets
 import urllib3
+import email.parser
 
 from urllib import parse as urlparse
 
@@ -44,7 +45,6 @@ else:
 def get_body(event):
     return base64.b64decode(str(event['body'])).decode('ascii')
     
-
 def validate_post(event):
     if "origin" in event['headers']:
         return event["headers"]["origin"] == "https://bde.bbdevcon.com"
@@ -183,16 +183,17 @@ def lambda_handler(event, context):
                     "Content-Type": "plain/text"
                 }
             }
-        
-        #get post form data
+        print(f"body: {event['body']}")
         msg_map = dict(urlparse.parse_qsl(get_body(event)))  # data comes b64 and also urlencoded name=value& pairs
-        logger.debug(str(msg_map))
-
+        print(f"msg_map: {msg_map}")
+        
         given_name = msg_map.get('fname','err')
         family_name = msg_map.get('lname','err')
         email = msg_map.get('email','err')
         company = msg_map.get('institution','err')
         job_title = msg_map.get('title','err')
+        
+        print(f"given_name: {given_name} family_name: {family_name} email: {email} company: {company} job_title: {job_title}")
         
         email = email.lower()
         
@@ -211,14 +212,22 @@ def lambda_handler(event, context):
         rest = rest_controller.rest_controller(token,config['hostname'],config['datasource'])
         snowflake = snowflake_controller.snowflake_controller()
         
+        print("1")
+        
         #Create user if they do not exist
         if not rest.userExists(email):
+            print("2")
             learn_password = password
+            print("3")
             user = create_user(rest,email,password,config['datasource'],given_name,family_name,job_title,company)
+            print("4")
             logger.debug(f"user created: {user}")
         else:
-            learn_password = "UserExists"
+            print("5")
+            learn_password = "UserExists" 
             
+        print("6")
+        
         #Enroll user in course
         enrollment = enrollUserInCourse(rest,config,email)
 
@@ -234,6 +243,7 @@ def lambda_handler(event, context):
 
         snowflake.create_snowflake_user(snowflake_info)
         
+       
         return {
             'statusCode' : 302,
             "headers": {
@@ -241,7 +251,6 @@ def lambda_handler(event, context):
                 "Location": f"https://bde.bbdevcon.com/confirmation.html?username={email}&learn_password={learn_password}&sf_user={snowflake_username}&sf_pass={password}"
             }
         }
-        
         
     except Exception as e:
         logger.error("Error processing registration: " + str(e))

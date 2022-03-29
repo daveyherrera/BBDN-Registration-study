@@ -56,6 +56,7 @@ def get_config(event_id):
         config['hostname'] = item['HostName']
         config['hubilo_event_id'] =  item['HubiloId']
         config['eloqua_parent_id'] =  item['EloquaCDOParentId']
+        config['eloqua_field_id'] =  item['EloquaCDOFieldId']
         logger.debug("config: " + str(config))
         
     except Exception as e:
@@ -126,7 +127,7 @@ def lambda_handler(event, context):
             
             if executeRegistration(data, config):
                 logger.debug(f"Registration successful")
-                status = eloqua_controller.createCustomDataObject(config['eloqua_parent_id'],data['email'])
+                status = eloqua_controller.createCustomDataObject(config['eloqua_parent_id'],config['eloqua_field_id'],data['email'])
                 if status != 200 and status != 201:
                     logger.error("Error creating custom data object")
             else:

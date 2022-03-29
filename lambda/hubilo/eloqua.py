@@ -51,7 +51,7 @@ class eloqua_controller():
             self.logger.error("[auth:setToken()] ERROR " + str(r.status) + " " + str(r.data))
             return None
 
-    def createCustomDataObject(self,parentId,email):
+    def createCustomDataObject(self,parentId,fieldId,email):
         host = self.getBaseUrl()
 
         if host is None:
@@ -78,7 +78,7 @@ class eloqua_controller():
             "type": "CustomObjectData",
             "fieldValues": [
                 {
-                "id": "4563",
+                "id": fieldId,
                 "value": email
                 }
             ]
