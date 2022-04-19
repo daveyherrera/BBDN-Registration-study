@@ -60,7 +60,8 @@ class RegistrationServiceStack(cdk.Stack):
                     'EventName': { 'S': row['EventName'] },
                     'EloquaCDOParentId': { 'S': row['EloquaCDOParentId'] },
                     'IsHubilo': { 'BOOL': bool(row['IsHubilo'] == "True") },
-                    'HubiloId': { 'S': row['HubiloId'] }
+                    'HubiloId': { 'S': row['HubiloId'] },
+                    'EloquaCDOFieldId': { 'S': row['EloquaCDOFieldId'] }
                 })
         
         return data
@@ -132,14 +133,6 @@ class RegistrationServiceStack(cdk.Stack):
                 ),
             )
 
-        jwt_lambda_layer = lambpy.PythonLayerVersion(
-            self, 'LearnRestLayer',
-            entry='learn_rest',
-            compatible_runtimes=[_lambda.Runtime.PYTHON_3_8],
-            description='Common Learn Rest Library',
-            layer_version_name='LearnRestLayer'
-        )
-
         snowflake_lambda_layer = lambpy.PythonLayerVersion (
             self, 'SnowflakeLambdaLayer',
             entry='snowflake-connector-python',
@@ -157,18 +150,6 @@ class RegistrationServiceStack(cdk.Stack):
             environment = {
                 'QUEUE_URL': registration_queue.queue_url,
                 'HUBILO_QUEUE_URL': hubilo_queue.queue_url,
-                'TABLE_NAME': config_table.table_name,
-                'LOG_LEVEL' : log_level 
-            },
-        )
-
-        #display registration form
-        bde_registration_lambda = _lambda.Function(
-            self, "BDERegistrationHandler",
-            runtime=_lambda.Runtime.PYTHON_3_8,
-            code=_lambda.Code.asset('lambda/bde'),
-            handler='bde.lambda_handler',
-            environment = {
                 'TABLE_NAME': config_table.table_name,
                 'LOG_LEVEL' : log_level 
             },
