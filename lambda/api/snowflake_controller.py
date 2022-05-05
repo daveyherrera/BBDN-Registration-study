@@ -14,7 +14,6 @@ from pathlib import Path
 
 import os
 import snowflake.connector
-import pandas as pd
 
 class snowflake_controller():
 
@@ -42,7 +41,7 @@ class snowflake_controller():
         
         return Path(f"{filename}.sql")
         
-    def get_data(self,query,user_info):
+    def get_data(self,cur, query,user_info):
         sql = self.load_sql_file(query).read_text()
         
         print(f"user_info is {user_info}")
@@ -53,23 +52,19 @@ class snowflake_controller():
         
         print(f"sql is {sql}")
         
-        data = pd.read_sql(sql, self.ctx)
+        cur.execute(sql)
             
-        print(data)
-        
-        return data    
+        print(f"{query} is completed.") 
 
     def create_snowflake_user(self,user_info):
         cur = self.ctx.cursor()
         print("reading text from sql file")
         
         try:
-            create_user = self.get_data('create_user', user_info)
-            print(f"create_user is {create_user}")
-            alter_user = self.get_data('alter_user', user_info)
-            print(f"alter_user is {alter_user}")
-            grant_role = self.get_data('grant_role', user_info)
-            print(f"grant_role is {grant_role}")
+            self.get_data(cur, 'create_user', user_info)
+            self.get_data(cur, 'alter_user', user_info)
+            self.get_data(cur, 'grant_role', user_info)
+            print(f"create_snowflake_user is complete")
         
         
         finally:
